@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 @RefreshScope
 @Component
 @Slf4j
-public class AuthenticationFilter implements GatewayFilter{
+public class AuthenticationFilter implements GatewayFilter {
     @Autowired
     TokenProvider jwtUtil;
     @Autowired
@@ -61,6 +61,8 @@ public class AuthenticationFilter implements GatewayFilter{
 
     private void populateRequestWithHeader(ServerWebExchange exchange, String token) {
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
+        log.info("roles -------------------------->");
+        log.info(String.valueOf(claims.get("roles")));
         exchange.getRequest().mutate()
                 .header("roles", String.valueOf(claims.get("roles")));
     }

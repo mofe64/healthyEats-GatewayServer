@@ -32,6 +32,7 @@ public class TokenProvider {
     }
 
     public Claims getAllClaimsFromToken(String token) {
+        token = token.substring(7);
         return Jwts.parser()
                 .setSigningKey(SIGNING_KEY)
                 .parseClaimsJws(token)
