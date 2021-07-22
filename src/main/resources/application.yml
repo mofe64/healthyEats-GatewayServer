@@ -1,0 +1,33 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8071
+  application:
+    name: healthyeats-gatewayserver
+# todo remove this before deploy
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#          lower-case-service-id: true
+#      routes:
+#        - id: mealservice
+#          uri: lb://HEALTHYEATS-MEALSERVICE
+#          predicates:
+#            - Path=/meals/**
+#          filters:
+#            - RewritePath=/meals/(?<path>.*), /$\{path}
+#
+#        - id: userservice
+#          uri: lb://HEALTHYEATS-USERSERVICE
+#          predicates:
+#            - Path=/users/**
+#          filters:
+#            - RewritePath=/users/(?<path>.*), /$\{path}
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: DEBUG
+#    reactor.netty.http.client: DEBUG
+#
+#server:
+#  port: 8072
