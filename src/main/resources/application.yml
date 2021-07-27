@@ -1,8 +1,10 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:8071
+    import: configserver:https://healthyeats-configserver-dev.herokuapp.com/
   application:
     name: healthyeats-gatewayserver
+  profiles:
+    active: prod
 # todo remove this before deploy
 #  cloud:
 #    gateway:

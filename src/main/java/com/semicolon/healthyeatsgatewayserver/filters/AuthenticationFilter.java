@@ -24,20 +24,17 @@ public class AuthenticationFilter implements GatewayFilter {
     @Autowired
     RouterValidator routerValidator;
 
-    final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("executing authentication filter");
-        logger.info("executing authentication filter");
         ServerHttpRequest request = exchange.getRequest();
 
         if (routerValidator.isSecured.test(request)) {
             if (isAuthMissing(request)) {
                 return onError(exchange, "Auth header missing on this request");
             }
-            final String token = getAuthorizationHeader(request);
-            if (jwtUtil.isTokenExpired(token)) {
+            final String token = getAuthorizationHeader(request).substring(7);
+            if (!jwtUtil.validateJwtToken(token)) {
                 return onError(exchange, "Auth header missing on this request is invalid");
             }
             populateRequestWithHeader(exchange, token);

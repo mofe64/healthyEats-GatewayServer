@@ -1,6 +1,7 @@
 package com.semicolon.healthyeatsgatewayserver.filters;
 
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class TokenProvider {
     @Value("${jwt.token.validity}")
     public long TOKEN_VALIDITY;
@@ -32,19 +34,36 @@ public class TokenProvider {
     }
 
     public Claims getAllClaimsFromToken(String token) {
-        token = token.substring(7);
         return Jwts.parser()
                 .setSigningKey(SIGNING_KEY)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
+    public boolean validateJwtToken(String token) {
+        boolean tokenValid = false;
+        try {
+            Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(token);
+            tokenValid = !isTokenExpired(token);
+        } catch (SignatureException e) {
+            log.error("Invalid Jwt Signature {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("Invalid jwt {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("Jwt Expired {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("jwt unsupported {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("jwt claims string is empty {}", e.getMessage());
+        }
 
-    public Boolean isTokenExpired(String token) {
+        return tokenValid;
+    }
+
+    private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
-
 
 
 }
